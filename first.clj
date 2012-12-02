@@ -80,6 +80,34 @@
 (def add (fn [x y] (+ x y))) ; another function definition form
 (add 4 6) ; this is how you call the above functions
 
+; functions with variable arguments (varargs)
+(defn add [x y & others] (apply + x y others))
+(add 3 4 8 8 4) ; returns 27
+
+; using defn to define functions
+(defn make-a-set
+	"returns a set of the arguments passed"
+	([x] #{x})
+	([x y] #{x y}))
+
+; in-place or anonymous functions with #()
+(def add #(+ %1 %2)) ; here %1 and %2 refer to the arguments of the functions
+(def add #(apply + %1 %2 %&)) ; %& refers to variable number of arguments
+
+; managing side effects with do
+(defn sum-with-logging [x & others]
+	(do
+		(def sum (apply + x others)) ; calculate sum
+		(println (str "sum is " sum)) ; this is where side effect (logging) occurs
+		sum)) ; return sum, the last statement of do is returned.
+
+; managing side effects with let
+(defn sum-with-logging [x & others]
+	(do
+		(let [sum (apply + x others)]
+			(println (str "sum is " sum))
+			sum)))
+
 ; program to print a greeting message to user
 (defn greet [name] (println (str "Hello " name)) name) ; str concatenates the strings.
 (greet "chinmay")
