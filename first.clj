@@ -45,7 +45,7 @@
 ; nested if
 (if false "this is not printed" 
 	(if true "nested if"
-		"this is not printed")) ; prints "nested true"
+		"this is not printed")) ; prints "nested if"
 
 ; if-not construct
 (if-not (= 2 3)
@@ -64,13 +64,21 @@
 	"this is not printed as well"
 	:default (println "this is default output"))
 
+(cond (> 3 2) ; evaluates to true
+	"3 is greater than 2"
+	(< 5 10) ; evaluates to true
+	"5 is less than 10"
+	:default (println "default case")) ; prints the first true condition i.e. prints "3 is greater than 2"
+
 ; calling java code from clojure
 (System/getProperties) ; calls static method
 (Thread/sleep 1000) ; sleeps for 1 second
+(Math/PI) ; prints 3.141592653589793
 (.. "hello" getClass getProtectionDomain)
-(. "something" toString)
-(. "something" (subString 2 4))
-; check how we can call System.out.println("something") from clojure?
+(. "something" toString) ; prints "something"
+(. "something" (substring 2 4)) ; prints "me"
+(.. "something" (substring 2 4) (charAt 1)) ; -> "something".substring(2, 4).charAt(1) -> prints 'e'
+(. System/out (println "something")) ; prints "something" and returns nil
 
 (doc +) ; prints the documentation for + function
 (find-doc "immutable") ; finds the references of word "immutable" in all the docs.
@@ -147,6 +155,7 @@
 	"this is not printed"
 	(< 15 10)
 	"this is not printed as well"
-	:default ((println "first line.") (println "this is default output"))) ; this throws NullPointerException
+	:default ((println "first line.") (println "this is default output"))) ; this throws NullPointerException.
+;	:default (do (println "first line.") (println "this is default output"))) ; this fixes the above exception
 
 

@@ -34,6 +34,12 @@
 		{:interest si :amount amount})) ; return a map of interest and total amount
 (simple-interest 1000 10 2)
 
+; trying to write an assertion for testing simple-interest function
+(def actual (simple-interest 1000 10 2))
+(def expected {:interest 200.0 :amount 1200.00})
+(and (== (:interest expected) (:interest actual)) (== (:amount expected) (:amount actual)))
+(= actual expected)
+
 ; calculate compound interest and total amount
 (defn compound-interest "calculate compound interest and total amount on a principle for a given rate and time"
 	[principle rate period]
