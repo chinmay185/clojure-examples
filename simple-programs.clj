@@ -30,7 +30,6 @@
 	[principle rate period]
 	(let [si (/ (* principle rate period) 100.0) 
 		amount (+ principle si)] ; calculate and store value of interest and amount 
-	(println (str "principle : " principle ", rate : " rate ", period : " period ", interest : " si ", amount : " amount))
 		{:interest si :amount amount})) ; return a map of interest and total amount
 (simple-interest 1000 10 2)
 
@@ -71,3 +70,18 @@
 		(next-terms t1 t2)))
 
 (take 15 (fibonacci 0 1))
+
+; Syntax highlighter
+(defn highlight-syntax [keywords input]
+	"When given a set of keywords we need to identify the occurrences of keywords in given input text and mark them with [blue] color attribute"
+	input)
+
+(def input "If we write a program and compile it, then we can run the program to get output.")
+(def keywords (list "as" "if" "and" "then" "when"))
+(def expectedOutput "[blue]If[blue] we write a program [blue]and[blue] compile it, [blue]then[blue] we can run the program to get output.")
+
+(def actualOutput (highlight-syntax keywords input))
+(= expectedOutput actualOutput)
+
+
+("When given a set")

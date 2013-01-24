@@ -1,3 +1,10 @@
+; TODO:
+; Example of closure with clojure
+; TDD in clojure?
+; Talk to anshul about functional concepts and examples
+ 
+
+
 ; hello world in clojure
 (def message "Hello World!") ; clojure strings are java strings
 (println message)
@@ -28,6 +35,10 @@
 (println (dec 5)) ; prints the value when 5 is decremented by one i.e. prints 4
 (println (max 9 2 4.4 18 3 -9 8.9)) ; prints the max value among the list i.e. prints 18 
 (println (min 9 2 4.4 18 3 -9.3 -8.9)) ; prints the min value among the list i.e. prints -9.3 
+
+(doc +) ; prints the documentation for + function
+(find-doc "immutable") ; finds the references of word "immutable" in all the docs.
+(source +) ; prints the source code of the function
 
 ; explicit casting
 (int 1.8) ; returns 1
@@ -80,8 +91,6 @@
 (.. "something" (substring 2 4) (charAt 1)) ; -> "something".substring(2, 4).charAt(1) -> prints 'e'
 (. System/out (println "something")) ; prints "something" and returns nil
 
-(doc +) ; prints the documentation for + function
-(find-doc "immutable") ; finds the references of word "immutable" in all the docs.
 
 ; defining functions
 (defn add "adds two integers." [x y] (+ x y)) ; this form is usually preferred
