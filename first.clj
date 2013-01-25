@@ -15,6 +15,8 @@
 (def y 3.6e4) ; defaults to java.lang.Double
 (def z true) ; defaults to java.lang.Boolean
 (def c \n) ; define a single character, defaults to java.lang.Character (verify again)
+(type y) ; returns java.lang.Double
+(class y) ; returns java.lang.Double
 (var x) ; prints #'user/x
 'x
 
@@ -86,10 +88,14 @@
 (Thread/sleep 1000) ; sleeps for 1 second
 (Math/PI) ; prints 3.141592653589793
 (.. "hello" getClass getProtectionDomain)
+(.toUpperCase "hello") ; The dot before toUpperCase tells Clojure to treat it as the name of a Java method instead of a Clojure function
 (. "something" toString) ; prints "something"
 (. "something" (substring 2 4)) ; prints "me"
 (.. "something" (substring 2 4) (charAt 1)) ; -> "something".substring(2, 4).charAt(1) -> prints 'e'
 (. System/out (println "something")) ; prints "something" and returns nil
+
+
+(str 1 2 nil 3) ; prints "123" skipping nils
 
 
 ; defining functions
