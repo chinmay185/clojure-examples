@@ -17,6 +17,7 @@
 ; data matching ee problem
 ; simulating a shell ee problem
 ; syntax highlighter
+; convert centigrate temperature to farenheight scale
 
 
 ; add all elements in the array or list
@@ -48,17 +49,12 @@
 		{:interest ci :amount amount})) ; return a map of interest and total amount
 (compound-interest 1000 10 2)
 
-; convert centigrate temperature to farenheight scale
-
+; Fibonacci sequence
 (defn f [n] 
 	(if (zero? n) 0 
 		(if (= n 1) 1
 			(+ (f (dec n)) (f (- n 2))))))
 
-
-
-
-; Fibonacci sequence
 (defn next-terms [term-1 term-2]
 	(let [term-3 (+ term-1 term-2)]
 		(lazy-seq
@@ -83,5 +79,27 @@
 (def actualOutput (highlight-syntax keywords input))
 (= expectedOutput actualOutput)
 
+; program to add up to a given number, for ex, 1 + 2 + 3 + 4, where x = 4
+(defn add-up
+	"adds all the numbers up to a limit"
+	([limit] (add-up limit 0 0 ))
+	([limit current sum]
+		(if (< limit current)
+			sum
+		(recur limit (+ 1 current) (+ current sum)))))
 
-("When given a set")
+; factorial using recursion
+; FIXME
+(defn factorial 
+	"returns a factorial of a number"
+	([n] (factorial n (dec n))) 
+	([n m]
+		(if (zero? n)
+			1
+		(* n (factorial (dec n))))))
+
+; looping with recursion
+(defn looping [i]
+	(if (= i 10)
+		i
+	(recur (inc i))))
