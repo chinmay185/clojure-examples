@@ -2,7 +2,7 @@
 ; Example of closure with clojure
 ; TDD in clojure?
 ; Talk to anshul about functional concepts and examples
- 
+; difference between macros and normal functions
 
 
 ; hello world in clojure
@@ -112,17 +112,31 @@
 
 (str 1 2 nil 3) ; prints "123" skipping nils
 
-
-; defining functions
+;;;----------------------------------------------------------------------------
+;;; defining functions
+; general form of functional definition is as follows
+(defn function-name doc-string? attr-map? [parameter-list]
+	conditions-map?
+	(expressions))
+; some examples are as follows
 (defn add "adds two integers." [x y] (+ x y)) ; this form is usually preferred
 (def add (fn [x y] (+ x y))) ; another function definition form
 (add 4 6) ; this is how you call the above functions
+
+; functions with conditions-map
+(defn total-price [price-per-item quantity]
+	{
+	:pre [(pos? price-per-item) (pos? quantity)] ; preconditions to check before function execution
+	:post [pos? %]} ; postconditions to check after function execution, % refers to function's return value
+	(* price-per-item quantity))
+(total-price 12 3) ; returns 36
+(total-price -12 3) ; throws AssertionError Assert Failed: (pos? price-per-item)
 
 ; functions with multiple arities
 (defn square-or-multiply 
 	"squares or multiplies integers"
 	([] 0) ; return 0 when called without any arguments
-	([x] (* x x)) ; return sqaure of x
+	([x] (square-or-multiply x x)) ; call the same function with two parameters
 	([x y] (* x y))) ; return x multiplied by y
 (square-or-multiply) ; returns 0
 (square-or-multiply 3) ; returns 9
@@ -142,6 +156,7 @@
 (def add #(+ %1 %2)) ; here %1 and %2 refer to the arguments of the functions
 (def add #(apply + %1 %2 %&)) ; %& refers to variable number of arguments
 
+;;;----------------------------------------------------------------------------
 ; managing side effects with do
 (defn sum-with-logging [x & others]
 	(do
@@ -149,7 +164,7 @@
 		(println (str "sum is " sum)) ; this is where side effect (logging) occurs
 		sum)) ; return sum, the last statement of do is returned.
 
-; managing side effects with let
+; managing side effects with do
 (defn sum-with-logging [x & others]
 	(do
 		(let [sum (apply + x others)]

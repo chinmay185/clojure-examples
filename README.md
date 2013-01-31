@@ -28,6 +28,7 @@ Day 3 -
 - Loading a file in repl using load-file
 - Accessing special variables in repl (*1, *2, *3 etc and pst to print stack trace)
 - Defining functions using defn, using anonymous functions
+- TDD in clojure using Midje
 - Data structure in clojure like list, set, map, sequences etc.
 
 Day 4 - 

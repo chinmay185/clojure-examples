@@ -88,7 +88,18 @@
 			sum
 		(recur limit (+ 1 current) (+ current sum)))))
 
-; factorial using recursion
+; factorial of a number
+(defn factorial [n]
+	(let [numbers (range 1 (+ n 1))]
+		(reduce * numbers)))
+
+(defn fact-loop [n]
+	(loop [current n fact 1]
+		(if (= current 1)
+			fact
+		(recur (dec current) (* fact current)))))
+
+
 ; FIXME
 (defn factorial 
 	"returns a factorial of a number"
