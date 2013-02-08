@@ -1,0 +1,912 @@
+Clojure is a new programming language created by Rich Hickey
+clojure.org
+
+-----------------
+
+Clojure is a dialect of LISP
+	Common LISP
+	Scheme
+
+Dynamic Language
+	key feature > macros
+
+Functional Language (impure)
+	pure functional > haskel
+
+biggest selling points > "lockless" concurrency
+	programmer doesnt have to handle locking
+
+implemented for the JVM
+	clj source code gets compiled into java bytecode
+	infact clojure compiler is implemented entierly in java
+	??
+
+Java interoperation
+	benefit of clojure running on JVM
+	trivial to called method of java class from clojure code and vice versa (lil more verbose)
+	use existing java libs
+
+	Dynamic + JVM == fastfastfast (didnt really understand why)
+
+Persistent Collections << most unique features
+
+EASY .. core of the language is realy realy small (minimal set of syntax rules)
+
+
+***************************************************************
+
+
+What does it mean for a language to be functional 
+or 
+What does it mean to program in a functional style
+
+
+functions are first-order
+	they can be treated as value
+	you can store function in a variable in a collection
+	pass is as an argument
+	return it
+
+function-like constructs
+	control statements like if or while instead of being statements they behave like functions
+	in functional language they return values
+		if statement can be an argument to another function because it get evaluated into a value like an expression 
+	makes language more COMPOSABLE
+		take different parts and compose them out of other different parts
+
+STATELESS
+	functional in the sense of mathematics
+	function is something that has
+		takes value input(s) 
+		produces value output(s) 
+		doesnt rely on any outside global state
+		doesnt affect any outside global state
+	doesnt create any side-effects
+		pure functional: no IO, no reading/modifying global value 
+
+	ADV: easier to write / understand
+
+	>>	we need side-effects if the program is going to do something useful
+			a program without side-effects does nothing but make your CPU get hot
+
+		IDEA in functional programming 
+			NOT to ELIMINATE all state changes but TO ISOLATE all state changes
+
+		PURE functional (haskel) : 
+			enforced by language 
+			all potential state changes have to be denoted as special exceptions
+			actors and monads
+			holes in functional purity which allows you to do something stateful
+
+		INPURE
+			clojure does not enforce anything by the way of language
+			help you structure the code in a functional way 
+			upto the programmer to keep the side-effects out of what is ment to be purely functional
+
+Immutable data
+	If we want to have out functions avoid mutating any state and avoid relying on state outside the functions 
+		.. makes sense to make as much data immutable
+		then we dont have to worry about data changing
+
+	Collections in clojure are immutable
+		ditto for local variable
+		sounds like a big hinderance .. but im told its not
+
+
+---------------------------------
+
+Some data-types of the language
+
+
+	Any object in clojure is really just a regular java object
+	Some instance of Java reference type which inherits from java.lang.Object
+
+	Numbers
+		arbitrary-sized numbers
+		ratios
+			written as a literal with a slash between the two numbers
+
+	NIL is NULL
+		treated as if it has the truth-value of FALSE
+
+
+***************************************************************
+
+Persistent Collection
+	collection which is 
+		* Immutable
+		* but we can create Cheap modified copies
+
+	supports all operations of non-persistent collections 
+		except they return new copies instead of modifying existing ones
+
+	KEY IDEA here is that these copies are cheap
+		both in terms of time and space (memory)
+			eg. If I want to add a element to an immutable list, The new immutable list with the extra element, actually points to all of the origional data and the new list
+				This implementation is way trickier that normal linked list implimentation
+
+Persistent Colleciton types:
+
+1. 	List 		( 1 2 3 )
+
+		Linked list 
+		Look-up time: Sequential 
+
+2. 	Vector		[ 1 2 3 ]
+	
+		Numerically indexed collection
+		based on an implementation using hashing
+		Look-up time: Constant (near constant .. logarithmic)
+
+3. Hashmap		{ "foo" 3 5 7 }
+
+		Associative collection
+		Key-Value pairs
+		In the above example key "foo" has value 3 and key 5 has value 7
+
+----------------------------
+
+Equality: have the same value
+Identity: not just euqal but the same object in memory
+
+In Java == when applied on 
+	primitives: equality check
+	reference types: identity check
+
+In clojure == always does equality test	
+	Because all objects are immutable, so while creating a large vector we can create a hash of that vector	and just compare this hash while doing an equality check
+
+	String in clojure is just java.lang.String
+		.. so equality test of Strings in clojure just uses regular java's euqals() method
+
+----------------------------
+
+SYMBOLS		
+(Identifier as value)
+
+	Symbol is a data-type like a string 
+	Symbol is a sequence of characters where there are rules as to what those characters can be
+	But symbols in clojure are not as restrictive as identifiers from other language
+		can have ! . - ? + =
+		eg.
+			blue
+			EE!35?
+			sassy-sally
+			semi_sweet
+
+	Symbol as Value: 
+		Can be an item in a collection or can be passed as argument to a function or return from a function
+	
+	Symbols can serve as identifiers representing variables and symbols just representing symbol's value
+
+
+-----------------------------
+
+KEYWORD
+like a symbol, but not
+
+	Starts with a colon
+	eg.
+		:blue
+		:EE!35?
+		:sassy-sally
+		:semi_sweet		
+	Useful to have a data type like a symbol but distinguishable from a symbol 
+
+-----------------------------
+
+METADATA
+data that describes other data
+
+	In clojure we can attach a map as metadata to any other data-types
+		meta-data can also not be modified 
+		equality checks ignore metadatas
+
+
+***************************************************************
+
+var
+
+	not all clojure data-types are immutable
+	a mutable reference
+		an object that is a pointer to another object	
+	>> var is a mutable collection of one that holds a reference
+
+----------------------
+
+namespace 
+
+	mapping of symbols to vars
+		an associative collection that maps the symbols keys to values that are vars
+	each namespace is identified by a unique name
+
+	eg.
+
+		Namespace.Dog
+
+			Symbol.cute > var
+			Symbol.ugly > var
+
+		Namespace.Cat
+
+			Symbol.sleepy > var
+
+	This is how code is organised in clojure 
+		when we write a function it is assigned to a var which mapped to some symbol in some namespace and thats how it is found
+
+-------------------------
+
+Clojure Runtime
+
+READER
+The reader is the entity that reads source code and converts it into s-expressions.
+These s-expressions are composed of ordinary Clojure data structures such as symbols, lists, vectors, sets, and hash maps.
+
+	To summarize, the reader converts source code into an AST implemented using Clojure’s own data structures.
+
+	The reader does this by using parentheses (and other brackets) as delimiters of each s-expression. In essence, the combination of the brackets and the reader allows code to be written in the AST directly. 
+
+	Homoiconic
+	(homo means same, iconic means representation)
+	Programming languages where code is written in the language’s own data structures. 
+	Homoiconicity is also what makes Clojure’s macro system possible
+
+	Further, the reader invalidates the need to write language parsers because the reader does that already.
+
+	These data structures are then (after reading a complete literal) passed to the evaluator to produce a result
+
+EVALUATOR
+
+	traverse data structures from reader
+
+	Symbol Evaluation
+	SYMBOLS have to be resolved into VARs
+		rabbit: 	
+			evaluator finds the symbol in the current namespace
+		pig/rabbit:
+			symbol rabbit in the namespace pig
+
+	List Evaluation
+	LISTS evaluate into FUNCTION CALLS
+		Rule
+			First item in the list is the specifier of the function which resolves to a var which points to a function "falcon"
+			Remmaining items are the arguments to that funciton 
+		eg.	(falcon 8 2 "goodbye")
+			Function call to function "falcon" in current namespace with 8, 2 and "goodbye" as arguments 
+		eg.	(iguana/hippo [nil 3] (kangaroo))
+			Function call to function "hippo" in namespace iguana, called with arguments of vector containing two items nil and 3 and the second argument is the value returned by the call to kangaroo 
+				(function mapped to by the var kangaroo is called with no arguments)  
+
+	Special Forms
+
+		A reserved symbol denoting special list evaluation
+			Not a function call but something else
+			If a list begins with any of these symbols that list is evaluated in a special way particular to that form
+
+			def
+			if
+			do
+			let
+			quote
+			var
+			fn
+			loop
+			recur
+			throw
+			try
+			.
+			new
+			set!
+
+
+-----------------------------
+
+if
+(if condition a b?)
+
+	when if is executed condition expression returns either true or false
+	true : expression a is going to be executed and returned
+	false: expression b, if specified
+
+	eg. 
+		(if (vulture) (foo) (bar))
+		(if (ostrich) "hide")
+			>> 	returns the default NIL when FALSE 
+
+
+***************************************************************
+
+
+quote
+
+(quote expression)
+
+	Sometimes you want to write a symbol which is just meant to be a symbol and not resolve into a var in a namespace or you want to write a list which is not meant to be a function call, just to be a list
+
+	quote is a special form that returns the expression as-is, without any evaluation
+
+	eg.	(fish (quote george))
+		gerorge is not resolved 
+		fish is called with the symbol george
+	eg.	(fish (quote (foo (bar) 3)))  
+		foo and bar are not resolved 
+		fish is called with argument that is a list starting with the symbol foo, another list and the number 3
+
+----------------------
+
+def
+
+(def name object)
+
+	Special Form that is used to create or modify symbol:var mappings in the current namespace
+
+	eg.
+		(def beetle 3)
+		(def shark ["hello" "goodbye"])
+
+	If the current namespace already had a mapping to that symbol then it modifies that var, doesnt create a new one. 
+
+
+-----------------------
+
+.
+
+used to call java methods
+
+static methods: 	(. class method argument*)
+instance methods: 	(. instance method argument*)
+
+
+eg.
+	(. Cat meow)			; Cat.meow()
+	(. foo bar 3 1 )		; foo.bar(3,1)
+	(. (ack) bar 3 1 )		; ack().bar(3,1)
+
+	    ^^^ this is a totally DYNAMIC CALL to java method
+
+------------------------
+
+new 
+
+(new class argument*)
+	
+	Special form to instantiate java classes
+		class is specified as a symbol
+		arguments that are required by the constructor
+
+	eg.	(new java.util.Date)
+
+	Posible to import the classes such that we dont have to fully qualify their name with packages
+
+
+-------------------------
+
+Standard Library Functions
+
+	There are number of things in the clojure standard library which you normally expect to find in a language as operators
+
+	eg. The arithematic operations in clojure are actually just funcions in the standard library namespace clojure.core
+
+		(clojure.core/+ 8 20)		; 28
+		(clojure.core/* 3 4)		; 12
+
+-------------------------
+
+Switching namespace
+
+in-ns >> in namespace
+
+(clojure.core/in-ns (quote alligator))
+(def harry "hello")
+
+(clojure.core/println harry)
+
+(clojure.core/inns (quote trout))
+(clojure.core/println harry)		; error
+
+-------------------------
+
+Symbol-var mapping in namespaces some in two types:
+
+1. Interned
+	Normal mapping
+	Created or modified by DEFs
+	True member of a namespace
+
+2. Referred
+	Borrowed from another namespace
+	Not a true member of a namespace, It' i's there for the sake of convenience so that we dont have to fully qualify so many names
+
+	eg.
+		Namespace.Dog
+
+			Symbol.cute > var
+			Symbol.ugly > var
+
+		Namespace.Cat
+
+			Symbol.sleepy > var
+
+		Namespace.Bird
+
+			Symbol.silly > var
+
+	>> If we refer the mappings of namespace cat into dog
+
+		Namespace.Dog
+
+			Symbol.cute > var
+			Symbol.ugly > var
+		|	Symbol.sleepy > var 	|			
+
+		Namespace.Cat
+
+			Symbol.sleepy > var
+
+		Namespace.Bird
+
+			Symbol.silly > var
+
+	>> NOTE: both Dog.sleepy and Cat.sleepy point to the same var
+
+	>> Now if we refer the mappings of namespace Dog into the namespace Bird
+
+		Namespace.Dog
+
+			Symbol.cute > var
+			Symbol.ugly > var
+		|	Symbol.sleepy > var |			
+
+		Namespace.Cat
+
+			Symbol.sleepy > var
+
+		Namespace.Bird
+
+			Symbol.silly > var
+		|	Symbol.cute > var 	|
+		|	Symbol.ugly > var 	|
+			
+	>> NOTE: 
+		only the interned mappings of Dog end up as Refered mappings in Bird
+		the refered mapping of Dog is not refered into bird
+
+
+***************************************************************
+
+
+(clojure.core/in-ns (quote alligator))
+(clojure.core/refer (quote clojure.core))
+
+(def harry (+ 3 6))
+
+--------------
+
+do
+
+(do expression*)
+
+	takes a list of expressions (body of do) which are executed in order 
+	returns the value retured by the last expression
+
+	eg.
+		(do
+			(beetle)
+			(print)
+			(shark ["hello" "goodbye"]))
+
+--------------
+
+let
+
+(let [(name value)*] expresssion)
+
+	like do, 
+		except it has the ability of binding values to names
+		so for the sake of this let you can establish a name say foo which has a certain value
+
+	these name value pairs are written inside a vector 
+		so that they are easily distinguishable
+
+	eg.
+		(def frog (let [cow 6] (lion cow)))	
+
+		(let [tiger (bat 3) manatee "yo"]
+			(ostrich tiger)
+			(urchin manatee))
+
+	effectively these name-value pairs serve as local variables		
+
+----------------
+
+fn
+
+(fn name? [parameter*] expression*)
+
+	Defines and returns a function
+	Has a body of expression and a vector for specifying parameters
+	The name is optional
+		It is used inside the function to refer to the function itself
+		So a function can possibly return itself or call itself 
+
+	eg.
+		(def duck ( fn [a] (+ a 4)))
+		(duck 7)						
+					; 11
+
+		(def sloth (fn b [] (println "hello") b))
+		(sloth)
+
+-----------------
+
+Lexical Scope
+refers to a scheme in languages where names refer to the most immediate scope in which they are contained 
+
+	eg.
+		(let [manatee "yo"]
+			(ostrich (fn [manatee] (+ manatee 4)))
+			(urchin manatee))
+
+		inside fn: manatee refers to the parameter
+		outside in let: manatee refers to its value binding 
+
+
+***************************************************************
+
+
+Tail Recursion
+Special case of recursion in which the function is recursively called as the very last thing in that function
+
+Affords a very big optimization
+
+	Normally every function call requires its own stack frame (memoery)
+
+	However in a function call when we make the last call, we know that we know that we are not coming back i.e. not going to use the local variables again .. So we can discard the frame for that call
+
+	So now if the function is recursively called 1,000 times 
+		Without optimization: 1,000 stack frames
+		With optimization: 1 stack frame
+
+	Every time we make a tail recursive call we overwrite the existing frame instead of making a new one
+
+	In most dialects of LISP the compiler will identify these case of tail recursion and automatically make this optimization
+
+	In Clojure however because JVM doesnt have this optimization for tail recursion we have to explicitly denote these tail recursive calls
+
+---------------------
+
+recur 
+
+(recur argument*) 
+
+	Compiler checks to make sure it is used in the tail position
+
+	eg.
+		(def mouse
+			(fn [a]
+				(print a)
+				(if (< a 1000)
+					(recur (+ a 4)))))
+		(mouse 7)
+
+-----------------------
+
+loop
+
+(loop [(name value)*] expression*)
+
+	Just like let 
+		Block of code where we can bind values to names
+	Except 
+		If we can recur in a loop it takes us back to the top and rebind the values to names
+	
+	eg.
+		(loop [a 7]
+			(print a)
+				(if (< a 1000)
+					(recur (+ a 4))))
+
+------------------------
+
+Clojure Runtime (EVALUATOR)
+
+2 step process
+
+	compile
+		evaluator looks at the reader data and compiles into java bytecode 				
+
+		* analyse special forms			
+		* resolve symbols
+		* process macros
+
+	execute
+		executes java bytecode
+
+		* effect special forms
+		* call functions
+
+
+>>	Because Symbols are resolved at compile time has an important consequence:
+
+	In most modern languages the order in which we define functions does not really matter, even in dynamic languages
+
+	eg.
+
+		(def duck (fn [] (frog)))			; throws error
+		(def frog (fn [] (print "hello"))
+		(duck)
+
+		throws error because the compiler expects all symbols to resolve to a var in a namespace or to a local name (parameter or name in a let)
+
+		both the following two fixes will work
+	
+		reordering definitinos
+
+			(def frog (fn [] (print "hello"))
+			(def duck (fn [] (frog)))
+			(duck)
+
+		or
+
+		add a empty symbol-var mapping for frog (this var can change at anytime)
+
+			(def frog)
+
+			(def duck (fn [] (frog)))
+			(def frog (fn [] (print "hello"))
+			(duck)
+
+------------------------
+
+macro
+a function that modifies the reader data
+
+	Function that takes data from the reader and TRANSFORMS the reader-data before the it gets compiled into bytecode
+
+	Macros serve as syntactic conveniences 
+		remove boiler plate code by creating macros
+
+
+	eg.
+		(monkey (racoon 1 2) [4 5 6])
+
+		Macro get Unevaluated Input
+			calls macro function monkey with arguments, first a list containing symbol racoon, 1 and 2 and second a vector containing 4, 5 and 6
+
+			the macro gets it's arguments unevaluated, it gets the reader-data not the values returned by compiling and executing that data
+
+		Macros for Syntactic convenience
+			Macro return a value and it's this value that is which get put back in the reader-data in place of where the macro call was    
+
+		Macros are processed 
+			Inside-Out
+				eg. monkey is the outer one, it is processed first
+			Recursively	
+				If there are any macro calls in what gets returned by a macro then they get processed too
+
+		>> (print (racoon 1 2) "yo" [4 5 6])
+
+	eg.
+		(defn lobsert [x] (print x))
+
+		>> (def lobster (fn [x] (print x)))
+
+	Macros act as a hook between the read and evaluate phases of the Clojure runtime.
+		Macros are Clojure functions, but they accept s-expressions as their arguments. Because s-expressions are data structures, they can be transformed and returned, and the return values are used in place of the original forms.
+
+		This ability to programmatically manipulate code is what it means to have access to the AST as a simple data structure.
+
+
+-----------------------------
+
+Metaprogramming with Macros
+Idea of programs generating or manipulating other programs (or themselves)
+
+	reduce boilerplate code
+	build syntactic abstractions (DSLs) on top of the core language
+
+
+***************************************************************
+
+
+defmacro
+
+(defmacro name [parameter*] expression*)
+
+	defmacro is used to create macros
+
+	defmacro is itself a macro in the namespace clojure.core
+
+	defmacro in the background creates a function
+		Because macro is just a function not a seperate data-type
+		
+		Except the var that it is bind to, In its' metadata has a key "macro" with value as true to denote that this is a macro  
+
+--------------------------
+
+sequence
+
+	Is not a concrete collection type, but an abstraction for collections
+
+	A collection with two operations
+		first 
+		rest
+
+	HashMap as Sequence
+		hashmap is an unordered collection
+		first: 	returns a random key-value pair
+				but the same pair is retutned on each call
+	
+	Lazy Sequence
+		Collection where data of the rest is defined qholly or partly in terms ofa funciton not necessarily data in memory
+
+		eg.
+			infinite-seq 
+				function that returns a sequence in which the first is provided as an argument  
+				on this sequence 
+					FIRST returns the argument specified 
+					REST return another sequence 
+						In this sequence the FIRST is one greater that the FIRST of the previous sequence and REST returns another sequence where FIRST is on greater than that FIRST ...
+
+				This works so because the REST in this sequence is defined as a function of the FIRST
+
+--------------------------
+
+Iteration
+
+	*	recursion
+			helps us avoid using anything stateful
+			however in clojure we use recursion as a last resort
+	*	sequence functions
+			usually when we iterate we want to do something for every item in the collection
+
+--------------------------
+
+structmap
+	A hashmap optimized for a predefined set of keys
+		doesnt have any associated methods
+
+	Like in java we create classes which are blueprints for instances
+		In clojure we create structmap basis objects which are used as blueprints for structmaps
+
+	Advantage over normal hashmap
+		For the set of keys defined in the basis object the structmaps created from those basis are optimized for those keys both in terms of access time and space efficiency
+
+--------------------------
+
+Is clojure not OO ?
+
+	OOP
+
+	encapsulation
+		data + operations on that data together through a limited interface to maintain the integrity of this data
+	inheritance
+		while defining a type being able to borrow attributes of another type
+	polymophism
+		function or operation is able to change its behavious depending upon the type/number of its arguments
+			run-time polymophism
+			compile-time polymophism
+
+
+>>	clojure does not enforce encapsulation 
+		in clojure we can define some types (x) and then define some functions (y) which operate on those types 
+
+		So x.y(1, 2) becomes (y x 1 2)
+
+>>	inheritance > hierarchies
+		relationship between symbols/keywords
+			eg. symbol.x is parent of symbol.y
+		it is used in polymorphism
+
+
+***************************************************************
+
+
+multimethod
+a function that dispatches to other functions
+
+	To achieve polymorphism in dynamic language
+		Write a function that looks at its arguments, number and types, and based passes control over to other functions
+
+	multimethod is a special function for this explicit purpose	which makes it very convenient
+
+-------------------
+
+variatic function
+	variable arity (number of arguments a function takes)
+
+	just like java varargs
+
+	in the parameter list the symbol '&' is treated specially
+		when you proceed the last parameter with ampersand that means it is a variatic function and that parameter receives the extra arguments to the function
+
+	eg. 
+		(fn [x & y] ...)
+		(fn [a b c & d] ...)
+
+-------------------
+
+more about Reader Syntax
+
+	Reader Syntax includes about a dozen syntactical convenience
+		
+		Apostrophe as a reader syntax for the special form quote
+
+		eg.
+			(fish (quote george))
+			(fish 'george)
+
+
+			(fish (quote (foo (bar) 3)))
+			(fish '(foo (bar) 3))
+
+-------------------
+
+why are vars mutable ?
+vars are usually used for storing all the global functions or all the global data-structures of our code. Normally in our programs the function definitions and data-type definitions dont change, then why are vars mutable ?
+
+	Because vars are mutable, allows us to take a running system and patch it
+		.. take a buggy function and replace it, all while the system is still running
+
+	Gives us the ability to change the code of a running program
+
+-------------------
+
+ref, agent, atom
+	mutable reference types with special concurrency semantics
+	allow for "lockless concurrency" in clojure
+
+ref
+a mutable reference only modifiable in a transaction
+
+	Transaction is a unit of work (section of code) that deals with a set of data
+		RULE: 
+			If during this transaction this set of data is modified by some outside source the transaction should fail
+			Everything done in the transaction should be undone
+			Now the transaction is re-attempted with the updated data
+
+	So as long as this critical data is being modified from outside the transaction while the transaction is running, we will keep retrying the transaction.
+
+	Clojure enforces that REFs only get modified in transactions by throwing exceptions if we attempt to do otherwise
+
+
+-------------------
+
+do-sync
+standard library macro
+
+(do-sync expression*)
+
+	do-sync takes a body of expressions, which make up the transaction.	In the transaction we can call the operation that modifies a ref
+
+	so we might have different threads running and in those thread we might have different transaction and those transaction might overlapp
+
+	if two overlapping transactions both modify the same ref, one of those is gonna attempt to commit before and it wins and the other one re-tries
+
+
+***************************************************************
+
+
+WHAT ELSE ??
+
+Threads 
+	Use existing Java classes to start threads 
+	All Clojure functions implement Runnable
+
+Proxy
+	a macro for creating derivations of Java classes and interfaces
+
+Java array interop
+	standard lib has functions and macros for the same
+
+Type hinting 
+	optimization by partial static typing
+
+Destructuring
+	a syntactical convenience for fn, let and loop
+
+Thread-local binding
+	a var binding seen temporarily and only in one thread
+
+
+***************************************************************
