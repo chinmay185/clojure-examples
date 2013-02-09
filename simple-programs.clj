@@ -199,3 +199,23 @@
 
 (do-to-all square [1 2 3 4 5 6 7 8])
 (do-to-all cube [1 2 3 4 5 6 7 8])
+
+; index-of-any
+(map-indexed vector [1 2 3 4])
+
+(for [x [1 2 3 4] :when (< x 2)] x)
+
+(defn index-any [coll pred]
+	(for [[idx item] (map-indexed vector coll) :when (pred item)]
+		idx))
+
+(#{\a \e \i \o \u} \o)
+
+(index-any "this is my string" #{\a \e \i \o \u})
+
+
+; find word frequencies in a text file.
+(require '[clojure.java.io :as io])
+
+(defn get-lines [f]
+	(line-seq (io/reader f)))
