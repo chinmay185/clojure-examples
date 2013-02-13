@@ -175,3 +175,27 @@
 		(drop n c)
 		first))
 
+; use of higher order function demonstrated below
+(defn square-all [numbers] 
+	(if (empty? numbers)
+		()
+		(cons (square (first numbers)) 
+			(square-all (rest numbers)))))
+
+(defn square [n] (* n n))
+
+(defn cube-all [numbers] 
+	(if (empty? numbers)
+		()
+		(cons (cube (first numbers)) 
+			(cube-all (rest numbers)))))
+
+(defn cube [n] (* n n n))
+
+(defn do-to-all [f numbers]
+	(if empty? numbers)
+	()
+	(cons (f numbers) (do-to-all f (rest numbers))))
+
+(do-to-all square [1 2 3 4 5 6 7 8])
+(do-to-all cube [1 2 3 4 5 6 7 8])
