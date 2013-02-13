@@ -114,3 +114,27 @@
 	(if (= i 10)
 		i
 	(recur (inc i))))
+
+; a function to find the last element of any data structure
+(defn last-element [c] (first (reverse c)))
+(assert (= 5 (last-element '(1 2 3 4 5))))
+(assert (= 5 (last-element [1 2 3 4 5])))
+(assert (= 2 (last-element [nil 2])))
+(assert (= nil (last-element [nil])))
+(assert (= nil (last-element ())))
+(assert (= \g (last-element "a simple string")))
+(assert (= 999999 (last-element (range 1000000))))
+
+; alternate solution with recursion to find last element
+(defn last-element [c]
+	(if (empty? (rest c))
+		(first c)
+		(recur (rest c))))
+
+; alternate solution by using nth
+(defn last-element [c]
+	(if (empty? c) 
+		nil
+		(nth c (dec (count c)))))
+
+
