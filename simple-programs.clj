@@ -115,8 +115,10 @@
 		i
 	(recur (inc i))))
 
-; a function to find the last element of any data structure
+; a function to find the last element of any data structure (problem 19 on 4clojure.com)
 (defn last-element [c] (first (reverse c)))
+((comp first reverse) '(1 2 3 4 5))
+
 (assert (= 5 (last-element '(1 2 3 4 5))))
 (assert (= 5 (last-element [1 2 3 4 5])))
 (assert (= 2 (last-element [nil 2])))
@@ -137,4 +139,24 @@
 		nil
 		(nth c (dec (count c)))))
 
+; a function to find second last (penultimate) element in a collection (problem 20 on 4clojure.com)
+(defn second-last [c] (first (rest (reverse c))))
+(second-last '(1 2 3 4 5 6))
 
+; alternate solution using threading macros
+(defn second-last [c]
+	(->
+		c
+		reverse
+		rest
+		first))
+
+; yet another solution using comp
+((comp first rest reverse) '(1 2 3 4))
+((comp last butlast) '(1 2 3 4))
+((comp second reverse) '(1 2 3 4))
+(#(last (butlast %)) '(1 2 3 4)) 
+
+; solution using nth
+(defn second-last [c] 
+	(nth c (- (count c) 2)))
