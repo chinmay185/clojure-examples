@@ -160,3 +160,18 @@
 ; solution using nth
 (defn second-last [c] 
 	(nth c (- (count c) 2)))
+
+; a function which returns the Nth element from a sequence (problem 21 from 4clojure.com)
+(defn nth-element [c n]
+	(if (zero? n)
+		(first c)
+		(recur (rest c) (dec n))))
+
+(nth-element '(4 5 6 7 8 9) 2)
+
+; alternate solution using drop
+(defn nth-element [c n]
+	(->
+		(drop n c)
+		first))
+
