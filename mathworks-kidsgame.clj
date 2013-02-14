@@ -1,5 +1,3 @@
-(require '(clojure  [set :as s]))
-
 (defn prime? [x] 
 	(let [divisors (range 2 (inc (int (Math/sqrt x))))
 		remainders (map #(rem x %) divisors)]
@@ -7,29 +5,33 @@
 
 (def numbers (range 2 100))
 
-(def all-primes (filter prime? numbers))
+(defn all-primes [numbers] 
+	(filter prime? numbers))
 
-(def even-numbers (filter even? numbers))
+(defn even-numbers [numbers] 
+	(filter even? numbers))
 
-(def even-primes (map (fn [x y] (if-not (identical? x y) x)) even-numbers all-primes))
+(defn odd-numbers [numbers] 
+	(filter even? numbers))
 
-(s/intersection (set all-primes) (set even-numbers))
+(defn mul-of-5 [n]
+	(if (zero? (rem n 5))
+	n
+	nil))
 
-;(defn even-primes [] (filter matches? numbers))
-;(def (filter even? (filter prime? numbers)))
+; (defn multiples-of-5 [numbers]
+; 	(filter (not (nil? (map mul-of-5 numbers)))) [] )
 
-;(defn matches? [collection & conditions] 
-;(println collection) 
+; #(zero? (rem % 5))
 
-;forech(number : collection){
-; result = true;
- ;foreach( func : conditions){
-;result = result && func(number);
-;if(!result)
+(multiples-of-5 [1 2 3 4 5 6 7 8 9 10 12 15 29])
 
- ;}
-;}
+(defn even-primes [numbers]
+	(set (all-primes (even-numbers numbers))))
 
-;)
+(defn odd-primes [numbers]
+	(set (all-primes (odd-numbers numbers))))
 
-even-primes
+(even-primes numbers)
+
+(odd-primes numbers)
