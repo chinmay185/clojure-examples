@@ -9,24 +9,126 @@ Clojure is a dialect of LISP
 
 Dynamic Language
 	key feature > macros
+	more things are determined at a program’s runtime rather than when a compiler looks at the source code
+	eg.
+		does not require type declarations when using variables or defining functions
+		eval function allows code to be loaded up and executed at runtime
+
+REPL
+(read-eval-print loop)
+	Interactive environment that allows code to be typed in and executed
+	It gives quick feedback and is helpful in incrementally writing code	
 
 Functional Language (impure)
 	pure functional > haskel
 
-biggest selling points > "lockless" concurrency
-	programmer doesnt have to handle locking
+	Clojure more functionally pure than most LISP dialects
+	Clojure data structures as immutable
+	Clojure does have fantastic support for explicit state management
+	Clojure encourages the use of higher-order functions such as map and reduce
+	Core data structures are lazy, which means things get executed only as needed
+		which enables some rather efficient programming constructs, eg. ability to define and use infinite sequences
 
-implemented for the JVM
-	clj source code gets compiled into java bytecode
-	infact clojure compiler is implemented entierly in java
-	??
+>>	Clojure takes advantage of its immutability and provides language-level support for safe, lock-free concurrency (using a software transactional memory model)
+		biggest selling points > "lockless" concurrency
+			programmer doesnt have to handle locking
 
-Java interoperation
-	benefit of clojure running on JVM
-	trivial to called method of java class from clojure code and vice versa (lil more verbose)
-	use existing java libs
 
-	Dynamic + JVM == fastfastfast (didnt really understand why)
+		Higher-order Functions
+			Clojure functions are first class, which means that functions can be passed as parameters to other functions, can be created dynamically, and can be returned from functions.
+			They can be stored inside other data structures like regular data. 
+			Clojure also provides lexical closures, which is a powerful construct that allows for expressive code.
+
+			This functional aspect of Clojure makes it easy to write code using higher-level constructs like map, reduce, and filter, which apply arbitrary functions to lists of data.
+
+		Immutability
+			All of Clojure’s core data structures are immutable—once created they can’t change
+			When something needs to change, a new object is created that includes the change and is returned
+			Clojure’s implementation of immutability performs extremely well and doesn’t slow down programs
+			This immutability greatly aids Clojure’s support of concurrency-safe multithreaded programs
+
+		Lazy And Infinite Sequences
+			This means that elements of a Clojure Sequence are not computed until the values are needed for	something else
+			Most core functions (such as map, reduce, and filter) produce lazy data structures that aren’t realized until needed
+				Further, this implies that a chain of such function calls returns a value that’s also lazy!
+			Clojure allows the programmer to create infinite lists of data
+
+
+Concurrency And The Multicore
+	Multithreaded programming raises two major issue: 
+		getting multithreaded programs to behave correctly and 
+		using all available cores to speed up the program
+	Clojure helps with both
+
+	-----------------------------------
+
+	Software Transactional Memory (STM)
+	Clojure implements a MultiVersion Concurrency Control (MVCC) based STM model to addresses the issue of correctness of multithreaded programs
+
+	Not only does the language provide simple ways to handle mutation, but it also provides constructs that allow and enforce safe mutation.
+	What this means in simpler terms is that mutating the value of an object can only be done inside a transaction (think database transaction).
+
+	This has two advantages. 
+		The first is that code becomes self-documenting. 
+			When the value of something needs to change in a thread-safe manner, the programmer	must be explicit and use a special Clojure construct for it: the ref. 
+		The other advantage is that if you attempt to modify the value inside a ref without an STM transaction, the Clojure runtime will throw an exception. 
+			This is how Clojure enforces the use of the transaction semantics and helps keep code thread-safe.
+
+	When a transaction needs to commit, and another thread has already committed a change to a shared ref, the later transaction is rolled back. 
+
+	Clojure’s STM system even retries the failed transaction several times, and as far as the programmer is concerned,
+	all this happens transparently
+
+	eg.
+		(defn add-amount [amount]
+			(dosync
+				(ref-set total-expenditure (+ amount @total-expenditure))))
+
+		@total-expenditure is a reader macro in action, it expands to (deref totalexpenditure) and it gets the value out of the object that the ref is pointing to.
+
+		By using a ref and by making sure that updates are always performed inside a dosync block, access to the variable protected by the ref becomes thread safe.
+
+	-----------------------------------
+
+Clojure is hosted on JVM
+	
+	Clojure code gets compiled into Java Bytecode
+	The design of Clojure embraces interoperability with other Java libraries as one of its central goals
+
+	Java Interoperation	
+		Use existing Java Libraries, It is trivial to called method of java class from clojure code and vice versa (lil more verbose)
+		eg.
+			Java in Clojure
+				user=> (.toUpperCase "clojure")
+			Clojure in Java
+				import clojure.lang.RT;
+				import clojure.lang.Var;
+
+				RT.loadResourceScript("clojure/file/clojure_script.clj");
+				Var aClojureFunction = RT.var("a-clojure-name-space", "a-clojure-function");
+				aClojureFunction.invoke("an argument" "another one");
+
+		Clojure code can be embedded into Java programs, thereby providing an incredibly flexible scripting capability to the end user. 
+		Clojure itself can be used as a glue language to bring the whole system together
+
+	JVM, is one of the most efficient virtual machines
+		The HotSpot optimizer does amazing things to speed up code running on top of it, and Clojure benefits from all this innovation. 
+		Despite being incredibly dynamic, Clojure code gets compiled to Java byte code and runs as fast or nearly as fast as Java code itself. 
+		This gives programmers all of Clojure’s benefits without any major performance costs
+
+Type Hints
+	You can help run Clojure programs faster by giving the evaluator type hints about any Java class you’re using, so that Clojure will know how to call methods on objects of such classes without reflection.
+	eg. 
+		(defn some-function [^ClassName object]
+			(.start s) s)
+
+	The type hint is the ^ followed by the name of the class. 
+	When the start method is called, Clojure will do so without any reflection. This is much faster than without the
+	type hint.
+
+Extensibility
+	By implementing the ISeq interface, the new data structure becomes native to Clojure and behaves the same as core Clojure data structures.
+	Operations like map, reduce, and filter will all work on this data structure
 
 Persistent Collections << most unique features
 
@@ -724,31 +826,71 @@ defmacro
 
 --------------------------
 
-sequence
+sequence (seqs)
+It is a logical list
+Is not a concrete collection type, but an abstraction for collections
 
-	Is not a concrete collection type, but an abstraction for collections
+	Clojure defines many algorithms in terms of sequences 
 
-	A collection with two operations
-		first 
-		rest
+>>	Unlike most Lisps where the list is represented by a concrete, 2-slot structure, Clojure uses the ISeq interface to allow many data structures to provide access to their elements as sequences. The seq function yields an implementation of ISeq appropriate to the collection. 
 
-	HashMap as Sequence
-		hashmap is an unordered collection
-		first: 	returns a random key-value pair
-				but the same pair is retutned on each call
-	
-	Lazy Sequence
-		Collection where data of the rest is defined qholly or partly in terms ofa funciton not necessarily data in memory
+	Features
+
+		Seqs differ from iterators in that they are persistent and immutable, not stateful cursors into a collection. 
+
+		As such, they are useful for much more than foreach - functions can consume and produce seqs, they are thread safe, they can share structure etc.
+
+		Most of the sequence library functions are lazy
+			i.e. functions that return seqs do so incrementally, as they are consumed, and thus consume any seq arguments incrementally as well. 
+			Functions returning lazy seqs can be implemented using the lazy-seq macro
+		
+		Lazy Sequence
+			Collection where data of the rest is defined wholly or partly in terms of a funciton not necessarily data in memory
+			This allows the programmer to create infinite lists of data
+			Functions returning lazy seqs can be implemented using the lazy-seq macro.
+
+				lazy-seq macro
+				It doesn’t evaluate its body immediately but returns a sequence-like object. 
+				This object will evaluate the body only when needed (and will also cache the result for subsequent uses,
+				saving CPU cycles).
 
 		eg.
-			infinite-seq 
-				function that returns a sequence in which the first is provided as an argument  
-				on this sequence 
-					FIRST returns the argument specified 
-					REST return another sequence 
-						In this sequence the FIRST is one greater that the FIRST of the previous sequence and REST returns another sequence where FIRST is on greater than that FIRST ...
+			(defn next-terms [term-1 term-2]
+				(let [term-3 (+ term-1 term-2)]
+					(lazy-seq
+						(cons term-3
+							(next-terms term-2 term-3)))))
+			
+			(defn fibonacci [t1 t2]
+				(concat [t1 t2]
+					(next-terms t1 t2)))
+			
+			(take 15 (fibonacci 0 1))
+			
+			(0 1 1 2 3 5 8 13 21 34 55 89 144 233 377)
 
-				This works so because the REST in this sequence is defined as a function of the FIRST
+			In absense of lazy sequences returned by lazy-seq macro this program would run in an infinite loop until the program runs out of memory. 
+			And by using certain functions like take, you can intelligently produce the required number of elements from such infinite sequences.
+			
+
+		HashMap as Sequence
+			tricky because hashmap is itself an unordered collection
+			first: 	returns a random key-value pair
+					but the same pair is retutned on each call
+
+--------------------------
+
+The Seq interface
+
+first
+	(first coll)
+	Returns the first item in the collection. Calls seq on its argument. If coll is nil, returns nil.
+rest	
+	(rest coll)
+	Returns a sequence of the items after the first. Calls seq on its argument. If there are no more items, returns a logical sequence for which seq returns nil.
+cons
+	(cons item seq)
+	Returns a new seq where item is the first element and seq is the rest.
 
 --------------------------
 
@@ -776,22 +918,22 @@ structmap
 
 Is clojure not OO ?
 
-	OOP
-
-	encapsulation
-		data + operations on that data together through a limited interface to maintain the integrity of this data
-	inheritance
-		while defining a type being able to borrow attributes of another type
-	polymophism
-		function or operation is able to change its behavious depending upon the type/number of its arguments
-			run-time polymophism
-			compile-time polymophism
-
+	What is OOP
+		encapsulation
+			data + operations on that data together through a limited interface to maintain the integrity of this data
+		inheritance
+			while defining a type being able to borrow attributes of another type
+		polymophism
+			function or operation is able to change its behavious depending upon the type/number of its arguments
+				run-time polymophism
+				compile-time polymophism
 
 >>	clojure does not enforce encapsulation 
 		in clojure we can define some types (x) and then define some functions (y) which operate on those types 
 
 		So x.y(1, 2) becomes (y x 1 2)
+
+>>	polymorphism is achieved by using generic functions (multimethods) to decide how to dispatch a function at runtime
 
 >>	inheritance > hierarchies
 		relationship between symbols/keywords
@@ -799,11 +941,40 @@ Is clojure not OO ?
 		it is used in polymorphism
 
 
-***************************************************************
+-----------------------------
 
+Clojure as a language supports all kinds of paradigms:
+	You can write procedural code if you want, or 
+	You can write your program in a functional style
+	Clojure programs can be written with an OO approach
+
+
+	Clojure is well suited for building custom languages (DSL) on top of a Lisp foundation
+		The macro system built into Clojure plays a large role in this.
+
+	Clojure is also well suited for bottom-up design. 
+
+		Bottom-up design 
+			An approach where higher-level components are built up from a collection of lower-level ones. 
+			A problem domain is analyzed, and several low-level components are created where each represents a single concept. 
+			These pieces are then combined to create the higher-level components as demanded by the problem at hand. 
+
+		Thanks to Clojure’s functional paradigm (higher-order functions and closures) and the associated possibility of using function combination, it’s a great language for designing systems in a bottom-up manner. 
+
+		It’s common to see Clojure programs that first create a mini-language that allows concepts in the problem domain to be expressed at a high level and then the problem solved in this language instead. 
+
+The bottom line is that Clojure doesn’t limit you by imposing a particular paradigm. 
+
+	
+***************************************************************
+	
 
 multimethod
 a function that dispatches to other functions
+	
+	Generic functions that let the programmer decide how to dispatch functions at runtime
+	
+	This is a far more capable approach to polymorphism
 
 	To achieve polymorphism in dynamic language
 		Write a function that looks at its arguments, number and types, and based passes control over to other functions
