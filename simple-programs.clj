@@ -153,7 +153,7 @@
 
 ; yet another solution using comp
 ((comp first rest reverse) '(1 2 3 4))
-((comp last butlast) '(1 2 3 4))
+((comp last butlast) '(1 2 3 4))		
 ((comp second reverse) '(1 2 3 4))
 (#(last (butlast %)) '(1 2 3 4)) 
 
@@ -174,6 +174,17 @@
 	(->
 		(drop n c)
 		first))
+
+; a function which returns the total number of elements in a sequence
+(defn count-elements 
+	([c] (count-elements c 0))
+	([c size]
+	(if (empty? c)
+		size
+		(recur (rest c) (inc size)))))
+
+; alternate solution using reduce
+(#(reduce (fn [c _] (inc c)) 0 [1 2 3 4 5 6]))
 
 ; use of higher order function demonstrated below
 (defn square-all [numbers] 
