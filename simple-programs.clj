@@ -230,3 +230,13 @@
 
 (defn get-lines [f]
 	(line-seq (io/reader f)))
+
+; find max number from given numbers
+(defn m 
+	([nums] (m (first nums) (rest nums)))
+	([current-max others]
+		(if (first others)
+			(if (> current-max (first others))
+				(recur current-max (rest others))
+				(recur (first others) (rest others)))
+			current-max)))
