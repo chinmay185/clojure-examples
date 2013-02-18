@@ -240,3 +240,10 @@
 				(recur current-max (rest others))
 				(recur (first others) (rest others)))
 			current-max)))
+
+; another solution using reduce
+(reduce #(if (> %1 %2) %1 %2) [1 2 3 4])
+
+; program to remove consecutive duplicates from numbers
+(def input [1 2 2 3 2 2 2 3 3 1 1 3])
+(def output [1 2 3 2 3 1 3])

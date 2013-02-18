@@ -14,10 +14,27 @@
 (defn odd-numbers [numbers] 
 	(filter even? numbers))
 
-(defn mul-of-5 [n]
+(defn mul-of-5? [n]
 	(if (zero? (rem n 5))
-	n
-	nil))
+	true
+	false))
+
+(defn mul-of-3? [n]
+	(if (zero? (rem n 3))
+	true
+	false))
+
+(defn multiples-of-5 [numbers]
+	(filter mul-of-5? numbers))
+
+(defn multiples-of-3 [numbers]
+	(filter mul-of-3? numbers))
+
+; multiples of 5 and 3. i.e. multiplese of 15
+(->
+	numbers
+	multiples-of-5
+	multiples-of-3)
 
 ; (defn multiples-of-5 [numbers]
 ; 	(filter (not (nil? (map mul-of-5 numbers)))) [] )
@@ -28,6 +45,12 @@
 
 (defn even-primes [numbers]
 	(set (all-primes (even-numbers numbers))))
+
+; all even prime numbers
+(->
+	numbers
+	even-numbers
+	all-primes)
 
 (defn odd-primes [numbers]
 	(set (all-primes (odd-numbers numbers))))
