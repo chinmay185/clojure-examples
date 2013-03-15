@@ -247,3 +247,43 @@
 ; program to remove consecutive duplicates from numbers
 (def input [1 2 2 3 2 2 2 3 3 1 1 3])
 (def output [1 2 3 2 3 1 3])
+(defn remove-duplicates [x y]
+	(if (number? x)
+		(if (= x y)
+			[x]
+			[x y])
+		(if (= (last x) y)
+			x
+			(conj x y))))
+(assert (= output (reduce remove-duplicates input)))
+
+; tic tac toe
+(defn tic-tac-toe [matrix] 
+	())
+
+(flatten [[:x :o :e]
+          [:e :o :e]
+          [:x :o :e]])
+
+
+; convert a number to its string representation. ex. convert 23 to "twenty three"
+(def m {0 "zero", 1 "one", 2 "two", 3 "three", 4 "four", 5 "five", 6 "six", 7 "seven", 8 "eight", 9 "nine", 10 "ten", 11, "eleven", 12 "twelve", 13 "thirteen", 14 "fourteen", 15 "fifteen", 16 "sixteen", 17 "seventeen", 18 "eighteen", 19 "nineteen", 20 "twenty", 30 "thirty", 40 "forty", 50 "fifty", 60 "sixty", 70 "seventy", 80 "eighty", 90 "ninety", 100 "hundered", 1000 "thousand"})
+
+(defn tostring [n]
+	(if-not (nil? (m n)) 
+		(m n)
+	(let [unit-digit (rem n 10) tens-value (- n unit-digit)]
+	(str (m tens-value) " " (m unit-digit)))))
+
+(defn toDigits 
+	([n] (toDigits n []))
+	([n digits]
+		(if (zero? (int (rem n 10)))
+			(reverse digits)
+		(recur (int (/ n 10)) (conj digits (rem n 10))))))
+
+(defn test-to-String []
+	(and
+		(nil? (assert (= (tostring 20) "twenty")))
+		(nil? (assert (= (tostring 10) "ten")))))
+(test-to-String)
