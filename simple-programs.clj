@@ -287,3 +287,49 @@
 		(nil? (assert (= (tostring 20) "twenty")))
 		(nil? (assert (= (tostring 10) "ten")))))
 (test-to-String)
+
+
+; Alien Chefs Code chef problem
+(def movie-timings [[1 4] [3 10] [2 6] [5 8]])
+(def visiting-times [1 10 9])
+
+; this works
+(filter (defn pred [timing] 
+	(nil? ((set (flatten (#(for [visiting-time visiting-times] 
+		(cons (found? (set (range (first %1) (inc (last %1)))) visiting-time) [])) timing))) true))) movie-timings)
+
+(defn found? [s e] (if (nil? (s e)) false true))
+
+(filter matches? movie-timings)
+
+
+; Week 1 Assignments - Coursera Course on FP
+
+; pascal's triangle
+(defn pascal[c, r]
+	"returns number at position c and r in pascal's triangle"
+	(if (or (= c 0) (= r 0) (= c r)) 
+		1
+		(+ (pascal (dec c) (dec r)) (pascal c (dec r)))))
+
+; check balance of parantheses
+(defn balance 
+	([chars] (balance chars 0))
+	([chars c]
+	(if (neg? c)
+		false
+	(if (empty? chars)
+		(zero? c)
+	(if (= (first chars) \( )
+		(recur (rest chars) (inc c))
+	(if (= (first chars) \) )
+		(recur (rest chars) (dec c))
+	(recur (rest chars) c)))))))
+
+; counting change or number partition
+(defn count-change [amount coin-values]
+	(cond (= amount 0) 1
+		(or (< amount 0) (empty? coin-values)) 0
+	:else
+		(+ (count-change amount (rest coin-values))
+			(count-change (- amount (first coin-values)) coin-values))))
