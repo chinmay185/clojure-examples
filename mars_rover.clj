@@ -1,3 +1,5 @@
+; a clojure solution to mars rover problem (for problem statement refer https://github.com/vijendra/mars-rovers#problem-statement-)
+
 (defn create-direction[direction left right x y]
 	{:value direction :left left :right right :x x :y y}
 )

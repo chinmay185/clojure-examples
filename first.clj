@@ -1,9 +1,7 @@
 ; TODO:
 ; Example of closure with clojure
 ; TDD in clojure?
-; Talk to anshul about functional concepts and examples
 ; difference between macros and normal functions
-
 
 ; hello world in clojure
 (def message "Hello World!") ; clojure strings are java strings
@@ -184,7 +182,6 @@
 (println (apply + lst))
 (/ (apply + lst) (* (count lst) 1.0)) ; calculate the average of the elements in the list
 
-
 (defn greet [t] "greets appropriate message based on tht time t of the day."
 	(if (> t 0)
 		if (< t 12)
@@ -212,5 +209,3 @@
 	"this is not printed as well"
 	:default ((println "first line.") (println "this is default output"))) ; this throws NullPointerException.
 ;	:default (do (println "first line.") (println "this is default output"))) ; this fixes the above exception
-
-

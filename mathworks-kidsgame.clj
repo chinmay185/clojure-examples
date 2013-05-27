@@ -1,3 +1,5 @@
+; a clojure solution to Mathworks kids game (for problem statement refer http://www.slideshare.net/DhavalDalal/math-works-kidsgame)
+
 (defn prime? [x] 
 	(let [divisors (range 2 (inc (int (Math/sqrt x))))
 		remainders (map #(rem x %) divisors)]

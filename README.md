@@ -33,3 +33,4 @@ Day 3 -
 
 Day 4 - 
 - Some basic functions on data structures
+- Higher order functions

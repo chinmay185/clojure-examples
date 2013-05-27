@@ -49,24 +49,6 @@
 		{:interest ci :amount amount})) ; return a map of interest and total amount
 (compound-interest 1000 10 2)
 
-; Fibonacci sequence
-(defn f [n] 
-	(if (zero? n) 0 
-		(if (= n 1) 1
-			(+ (f (dec n)) (f (- n 2))))))
-
-(defn next-terms [term-1 term-2]
-	(let [term-3 (+ term-1 term-2)]
-		(lazy-seq
-			(cons term-3
-				(next-terms term-2 term-3)))))
-
-(defn fibonacci [t1 t2]
-	(concat [t1 t2]
-		(next-terms t1 t2)))
-
-(take 15 (fibonacci 0 1))
-
 ; Syntax highlighter
 (defn highlight-syntax [keywords input]
 	"When given a set of keywords we need to identify the occurrences of keywords in given input text and mark them with [blue] color attribute"
@@ -78,42 +60,6 @@
 
 (def actualOutput (highlight-syntax keywords input))
 (= expectedOutput actualOutput)
-
-; program to add up to a given number, for ex, 1 + 2 + 3 + 4, where x = 4
-(defn add-up
-	"adds all the numbers up to a limit"
-	([limit] (add-up limit 0 0 ))
-	([limit current sum]
-		(if (< limit current)
-			sum
-		(recur limit (+ 1 current) (+ current sum)))))
-
-; factorial of a number
-(defn factorial [n]
-	(let [numbers (range 1 (+ n 1))]
-		(reduce * numbers)))
-
-(defn fact-loop [n]
-	(loop [current n fact 1]
-		(if (= current 1)
-			fact
-		(recur (dec current) (* fact current)))))
-
-
-; FIXME
-(defn factorial 
-	"returns a factorial of a number"
-	([n] (factorial n (dec n))) 
-	([n m]
-		(if (zero? n)
-			1
-		(* n (factorial (dec n))))))
-
-; looping with recursion
-(defn looping [i]
-	(if (= i 10)
-		i
-	(recur (inc i))))
 
 ; a function to find the last element of any data structure (problem 19 on 4clojure.com)
 (defn last-element [c] (first (reverse c)))
@@ -127,11 +73,6 @@
 (assert (= \g (last-element "a simple string")))
 (assert (= 999999 (last-element (range 1000000))))
 
-; alternate solution with recursion to find last element
-(defn last-element [c]
-	(if (empty? (rest c))
-		(first c)
-		(recur (rest c))))
 
 ; alternate solution by using nth
 (defn last-element [c]
@@ -175,15 +116,7 @@
 		(drop n c)
 		first))
 
-; a function which returns the total number of elements in a sequence
-(defn count-elements 
-	([c] (count-elements c 0))
-	([c size]
-	(if (empty? c)
-		size
-		(recur (rest c) (inc size)))))
-
-; alternate solution using reduce
+; a function which returns the total number of elements in a sequence, solution using reduce
 (#(reduce (fn [c _] (inc c)) 0 [1 2 3 4 5 6]))
 
 ; use of higher order function demonstrated below
@@ -224,24 +157,13 @@
 
 (index-any "this is my string" #{\a \e \i \o \u})
 
-
 ; find word frequencies in a text file.
 (require '[clojure.java.io :as io])
 
 (defn get-lines [f]
 	(line-seq (io/reader f)))
 
-; find max number from given numbers
-(defn m 
-	([nums] (m (first nums) (rest nums)))
-	([current-max others]
-		(if (first others)
-			(if (> current-max (first others))
-				(recur current-max (rest others))
-				(recur (first others) (rest others)))
-			current-max)))
-
-; another solution using reduce
+; find max number from given numbers, solution using reduce
 (reduce #(if (> %1 %2) %1 %2) [1 2 3 4])
 
 ; program to remove consecutive duplicates from numbers
@@ -265,7 +187,6 @@
           [:e :o :e]
           [:x :o :e]])
 
-
 ; convert a number to its string representation. ex. convert 23 to "twenty three"
 (def m {0 "zero", 1 "one", 2 "two", 3 "three", 4 "four", 5 "five", 6 "six", 7 "seven", 8 "eight", 9 "nine", 10 "ten", 11, "eleven", 12 "twelve", 13 "thirteen", 14 "fourteen", 15 "fifteen", 16 "sixteen", 17 "seventeen", 18 "eighteen", 19 "nineteen", 20 "twenty", 30 "thirty", 40 "forty", 50 "fifty", 60 "sixty", 70 "seventy", 80 "eighty", 90 "ninety", 100 "hundered", 1000 "thousand"})
 
@@ -288,7 +209,6 @@
 		(nil? (assert (= (tostring 10) "ten")))))
 (test-to-String)
 
-
 ; Alien Chefs Code chef problem
 (def movie-timings [[1 4] [3 10] [2 6] [5 8]])
 (def visiting-times [1 10 9])
@@ -302,9 +222,7 @@
 
 (filter matches? movie-timings)
 
-
 ; Week 1 Assignments - Coursera Course on FP
-
 ; pascal's triangle
 (defn pascal[c, r]
 	"returns number at position c and r in pascal's triangle"
